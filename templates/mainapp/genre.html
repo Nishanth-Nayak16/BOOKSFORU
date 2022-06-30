@@ -1,0 +1,78 @@
+{% extends "mainapp/layout.html" %}
+{% load static %}
+
+{% block title  %}
+Genre
+{% endblock title %} 
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'mainapp/css/genre.css' %}" />
+<!-- <link rel="stylesheet" href="{% static 'mainapp/css/tailwind.min.css' %}"> 
+<link rel="stylesheet" href="{% static 'mainapp/css/bootstrap.min.css' %}" /> -->
+{% endblock head %}
+
+
+{% block main %}
+
+<h1  style=" margin-top: 100px;" class="genre-head text-center pt-3 pb-3">{{ genre }}</h1>
+<div
+        style="width: 30%;
+          margin: auto;
+          margin-top: 30px;
+          margin-bottom: 10px;
+          border: 0;
+          height: 0;
+          box-shadow: 0 0 10px 1px #F77E21;"
+      ></div> 
+
+
+<div class="centre card-deck ">
+    {% for book in genre_topbook %}
+
+    <div class="card col-sm-12 col-lg-3 " style="margin-bottom: 50px;" >
+        <div class="row">
+            <img class="card-img  mt-4 " src="{{book.image_url}}" alt="book Card">
+            <div style=" margin-top: 30px;
+            margin-left: 10px;
+            margin-bottom: 30px;
+            margin-right: 10px;" class="card-body text-center">
+                <h5 class="card-title">{{book.original_title|truncatechars:50}}</h5>
+                <p class="card-text"> {{book.authors|truncatechars:50}}</p>
+            </div>
+        </div><br>
+        <a href="javascript:;" onclick='bookDetails(this)' class="btn more-details"
+            data-book-id="{{ book.book_id }}">More Details</a>
+        {% if user.is_authenticated %}
+        <div class='rating-block' id='rating-block-{{ book.book_id }}' onmouseover="rateStart(this)" onclick='rateBook(this)' onmouseout='finishRate(this)'
+            data-book-id="{{ book.book_id }}">
+            <div id='button-text-{{ book.book_id }}'>Rate <i class="fa fa-heart" style="color:red"></i> This Book</a>
+            </div>
+            <div class='rateYo' id='rate-{{ book.book_id }}'></div>
+        </div>
+        {% else %}
+        <div class='rating-block btn' onclick="location.href='{% url 'account_signup' %}'">
+            <div id='button-text'>Rate <i class="fa fa-heart" style="color:red"></i> This Book</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+
+    <!-- {% if forloop.counter|divisibleby:"4"  %}
+</div>
+<div class="card-deck  ">
+    {% endif %} -->
+    {% endfor %}
+    </div>
+</div><!-- The final deck is closed here, outside the loop -->
+<div
+        style="width: 30%;
+          margin: auto;
+          margin-top: 5px;
+          margin-bottom: 10px;
+          border: 0;
+          height: 0;
+          box-shadow: 0 0 10px 1px #F77E21;"
+      ></div> 
+{% endblock main %}

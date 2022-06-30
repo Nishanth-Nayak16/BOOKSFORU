@@ -1,0 +1,114 @@
+{% extends "mainapp/layout.html" %} 
+{% load static %} 
+{% block title %} 
+Library 
+{% endblock title %} 
+{% block head %}
+<link rel="stylesheet" href="{% static 'mainapp/css/saved_book.css' %}">
+{% endblock head %} 
+{% block main %}
+
+<h1 id="title"  style=" margin-top: 100px;" class="genre-head text-center pt-3 pb-3">Books Saved for Later - {{num}}</h1>
+
+<div
+        style="width: 30%;
+          margin: auto;
+          margin-top: 30px;
+          margin-bottom: 10px;
+          border: 0;
+          height: 0;
+          box-shadow: 0 0 10px 1px #F77E21;"
+      ></div> 
+      <div class="centre card-deck ">
+        {% for book in page_obj %}
+    
+        <div class="card col-sm-12 col-lg-3 " style="margin-bottom: 50px;" >
+            <div class="row">
+                <img class="card-img  mt-4 " src="{{book.image_url}}" alt="book Card">
+                <div style=" margin-top: 30px;
+                margin-left: 10px;
+                margin-bottom: 30px;
+                margin-right: 10px;" class="card-body text-center">
+                    <h5 class="card-title">{{book.original_title|truncatechars:30}}</h5>
+                    <p class="card-text"> {{book.authors|truncatechars:30}}</p>
+                </div>
+            </div><br>
+           
+            <a href="javascript:;" onclick='bookDetails(this)' class="btn more-details"
+                data-book-id="{{ book.book_id }}">More Details</a>
+            {% if user.is_authenticated %}
+            <div class='rating-block' id='rating-block-{{ book.book_id }}' onmouseover="rateStart(this)" onclick='rateBook(this)' onmouseout='finishRate(this)'
+                data-book-id="{{ book.book_id }}">
+                <div id='button-text-{{ book.book_id }}'>Rate <i class="fa fa-heart" style="color:red"></i> This Book</a>
+                </div>
+                <div class='rateYo' id='rate-{{ book.book_id }}'></div>
+            </div>
+            <br>
+            <a href="javascript:;" class="btn remove" onclick='removeBook(this)' data-book-id="{{ book.book_id }}">Remove from List</a>
+            <br>
+            <br>
+            {% else %}
+            <div class='rating-block btn' onclick="location.href='{% url 'account_signup' %}'">
+                <div id='button-text'>Rate <i class="fa fa-heart" style="color:red"></i> This Book</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    
+    
+    
+        <!-- {% if forloop.counter|divisibleby:"4"  %}
+    </div>
+    <div class="card-deck  ">
+        {% endif %} -->
+        {% endfor %}
+        </div>
+    </div><!-- The final deck is closed here, outside the loop -->
+<nav aria-label="...">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="btn link" href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a></li>
+        {% endif %}
+
+        <li class="page-item "><span class="btn des">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item "><a class="btn link" href="?page={{ page_obj.next_page_number }}"> Next &raquo;</a></li>
+        {% endif %}
+</nav>
+<div
+        style="width: 30%;
+          margin: auto;
+          margin-top: 30px;
+          margin-bottom: 10px;
+          border: 0;
+          height: 0;
+          box-shadow: 0 0 10px 1px #F77E21;"
+      ></div> 
+
+{% endblock main %} 
+{% block script %}
+<script>
+    function removeBook(obj) {
+        var bookid = obj.getAttribute('data-book-id');
+        console.log(bookid)
+        $.ajax({
+            data: {
+                'bookid': bookid,
+                'csrfmiddlewaretoken': Cookies.get('csrftoken')
+            },
+            dataType: 'json',
+            url: '{%url "remove_saved_book" %}',
+            type: 'POST',
+            success: function(response) {
+                $("#book-" + bookid).remove();
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        })
+
+    }
+</script>
+{% endblock script %}

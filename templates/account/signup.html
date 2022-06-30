@@ -1,0 +1,61 @@
+{% extends 'mainapp/layout.html' %}
+{% load i18n %}
+{% load static %}
+{% load account socialaccount %}
+{% get_providers as socialaccount_providers %}
+
+{% block title %}
+Sign Up
+{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'mainapp/css/signup.css' %}">
+{% endblock head %}
+
+{% block main %}
+<div class="container-fluid account-block ">
+    <div class="h-100 row">
+        <div class=" col-12 col-sm-12 col-xl-8 signup-block">
+            <h3 class="welcome" style="font-weight: 500;">Register<br> <span style="font-size: 25px;">Books4U</span> </h3>
+
+            <form method="POST" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    {% endif %}
+                    {{ form.email }}
+                    <br><br>
+                    {{ form.username }}
+                    <br><br>
+                    {{ form.password1 }}
+                    <br><br>
+                    {{ form.password2 }}
+                    <div class="error_div">
+                    {% if form.errors %}
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <strong>{{ error|escape }}</strong>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <strong>{{ error|escape }}</strong>
+                    {% endfor %}
+                    <br>
+                    {% endif %}
+                    <button class="signupbutton" type="submit">{% trans "Sign Up" %}</button>
+                    <br>
+                    </div>
+                </div>
+
+            </form>
+            <!-- <a href="{% provider_login_url 'google' %}"><button class="googlebutton"><i class="fa fa-google fa-x"
+                aria-hidden="true"></i> Sign Up With Google</button></a> -->
+
+        </div>
+        <div class="h-100 hidden-sm col-xl-4 img-block mw-100" style="background-image : url('{% static "mainapp/png/login/login.webp" %}')">
+            <!-- <a class="btn-bot" href="{% url 'account_login' %}">SIGN IN</a> -->
+        </div>
+    </div>
+</div>
+{% endblock main %}
